@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation'
 
-export default function PageRedirect() {
+export const dynamic = 'force-static'
+
+export default function Home() {
   redirect('/eth')
 }

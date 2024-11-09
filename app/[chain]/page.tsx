@@ -1,33 +1,39 @@
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { CreateLeaderboard } from '@/components/CreateLeaderboard'
+import { DashboardClient } from './components/dashboard-client'
 
-import { Leaderboard } from './components/leaderboard'
+export const dynamic = 'force-static'
 
-export default function Dashboard() {
+// Reduce the number of static paths to essential ones
+export function generateStaticParams() {
+  return [
+    { chain: 'eth' },
+    { chain: 'bsc' },
+    { chain: 'matic' },
+    { chain: 'avax' },
+    { chain: 'arb' }
+  ]
+}
+
+export default function Dashboard({
+  params,
+}: {
+  params: { chain: string }
+}) {
   return (
-    <main className="max-w-screen-xl mx-auto flex flex-col gap-4 p-4">
-      <section className="">
-        <h1 className="text-4xl tracking-widest mb-4">Diamond Hands</h1>
-        <p className="max-w-[500px]">
+    <main className="max-w-screen-xl mx-auto flex flex-col gap-6 p-4">
+      <section className="sci-fi-border rounded-lg p-6 animate-float">
+        <h1 className="text-4xl tracking-widest mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
+          Diamond Hands
+        </h1>
+        <p className="max-w-[500px] text-blue-100/80">
           Lock tokens and let the Diamond Hands app be the trusty leash that
           keeps your tokens safe and sound. It's like a digital doghouse for
           your tokens, but with a lot more treats!
         </p>
       </section>
-      <Leaderboard />
-      <section className="flex gap-4">
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg">Project Owners</h3>
-          <CreateLeaderboard />
-          <Button>Erc721 {'->'} DN404</Button>
-        </div>
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg">Regular Lockers</h3>
-          <Button>Lock Tokens</Button>
-          <Button>Lock NFTs</Button>
-          <Button>My Locks</Button>
-        </div>
-      </section>
+
+      <DashboardClient chain={params.chain} />
     </main>
   )
 }

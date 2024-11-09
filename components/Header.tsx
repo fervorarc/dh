@@ -3,48 +3,59 @@
 import '@rainbow-me/rainbowkit/styles.css'
 
 import Image from 'next/image'
-
+import Link from 'next/link'
 import { useChain } from '@/hooks'
 import { ConnectButton, useChainModal } from '@rainbow-me/rainbowkit'
-import { useAccount } from 'wagmi'
-
+import { useAccount, useChainId } from 'wagmi'
 import { Button } from './ui/button'
 
-const getChainLogo = (chain: string) => {
-  if (chain === 'Ethereum') return '/chains/ethereum.svg'
-  else if (chain === 'BNB Smart Chain') return '/chains/bsc.svg'
-  else if (chain === 'Polygon') return '/chains/polygon.svg'
-  else if (chain === 'Avalanche') return '/chains/avalanche.svg'
-  else if (chain === 'Arbitrum One') return '/chains/arbitrum.svg'
-  else if (chain === 'Base') return '/chains/base.svg'
-  else if (chain === 'Fantom') return '/chains/fantom.svg'
-  else if (chain === 'OP Mainnet') return '/chains/optimism.svg'
-  else if (chain === 'Mantle') return '/chains/mantle.svg'
-  else if (chain === 'Moonbeam') return '/chains/moonbeam.svg'
-  else if (chain === 'Filecoin Mainnet') return '/chains/filecoin.svg'
-  else if (chain === 'Celo') return '/chains/celo.svg'
-  else if (chain === 'Kava EVM') return '/chains/kava.svg'
-  else if (chain === 'Scroll') return '/chains/scroll.svg'
-  else if (chain === 'Linea Mainnet') return '/chains/linea.svg'
-  else if (chain === 'Blast') return '/chains/blast.svg'
-  else if (chain === 'Fraxtal') return '/chains/frax.svg'
-  return '/logo.png'
+const getChainLogo = (chainId: number) => {
+  switch (chainId) {
+    case 1: return '/chains/ethereum.svg'
+    case 56: return '/chains/bsc.svg'
+    case 137: return '/chains/polygon.svg'
+    case 43114: return '/chains/avalanche.svg'
+    case 42161: return '/chains/arbitrum.svg'
+    case 8453: return '/chains/base.svg'
+    case 250: return '/chains/fantom.svg'
+    case 10: return '/chains/optimism.svg'
+    case 5000: return '/chains/mantle.svg'
+    case 1284: return '/chains/moonbeam.svg'
+    case 314: return '/chains/filecoin.svg'
+    case 42220: return '/chains/celo.svg'
+    case 2222: return '/chains/kava.svg'
+    case 534352: return '/chains/scroll.svg'
+    case 59144: return '/chains/linea.svg'
+    case 81457: return '/chains/blast.svg'
+    case 252: return '/chains/frax.svg'
+    default: return '/logo.png'
+  }
 }
 
 export default function Header() {
   const { isConnected } = useAccount()
   const { openChainModal } = useChainModal()
-
-  const [chain] = useChain()
-
-  console.log(chain)
+  const chainId = useChainId()
 
   return (
-    <header className="h-20 bg-white/10 p-4">
-      <div className="max-w-screen-xl mx-auto flex  items-center justify-between">
+    <header className="h-20 bg-black/20 backdrop-blur-sm border-b border-blue-500/20 p-4">
+      <div className="max-w-screen-xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="AnyInu" width={40} height={40} />
-          <span className="text-xl">
+          <Link href="/" className="relative w-10 h-10">
+            <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Image 
+                src="/logo.png" 
+                alt="Any Inu"
+                width={32}
+                height={32}
+                className="animate-float z-10"
+                priority
+                unoptimized
+              />
+            </div>
+          </Link>
+          <span className="text-xl text-blue-400">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -60,18 +71,20 @@ export default function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="w-[50px] h-[50px] border border-white/20"
+            className="w-[50px] h-[50px] border border-blue-500/20 glow"
             disabled={!isConnected}
             onClick={openChainModal}>
             <Image
-              src={getChainLogo(chain)}
-              alt={chain}
+              src={getChainLogo(chainId)}
+              alt={chainId.toString()}
               width={35}
               height={35}
               className="rounded-full"
+              priority
+              unoptimized
             />
           </Button>
-          <span className="text-xl">
+          <span className="text-xl text-blue-400">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -84,8 +97,9 @@ export default function Header() {
               />
             </svg>
           </span>
-          <div className="animate-shake text-4xl">💎 🙌</div>
+          <div className="animate-float text-4xl">💎 🙌</div>
         </div>
+
         <ConnectButton.Custom>
           {({
             account,
@@ -110,7 +124,7 @@ export default function Header() {
                 {(() => {
                   if (!connected) {
                     return (
-                      <Button onClick={openConnectModal} type="button">
+                      <Button onClick={openConnectModal} type="button" className="glow">
                         Connect Wallet
                       </Button>
                     )
@@ -118,15 +132,18 @@ export default function Header() {
 
                   if (chain.unsupported) {
                     return (
-                      <button onClick={openChainModal} type="button">
+                      <Button onClick={openChainModal} type="button" className="glow">
                         Wrong network
-                      </button>
+                      </Button>
                     )
                   }
 
                   return (
                     <div style={{ display: 'flex', gap: 12 }}>
-                      <Button onClick={openAccountModal} type="button">
+                      <Button 
+                        onClick={openAccountModal} 
+                        type="button"
+                        className="glow sci-fi-border">
                         {account.displayName}
                       </Button>
                     </div>

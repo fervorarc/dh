@@ -1,11 +1,9 @@
 import { Montserrat } from 'next/font/google'
 import localFont from 'next/font/local'
-
 import type { Metadata } from 'next'
-
 import './globals.css'
 
-import Providers from '@/lib/providers'
+import RootLayoutClient from './layout.client'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -28,6 +26,15 @@ export const metadata: Metadata = {
   title: 'Diamond Hands | AnyInu',
   description:
     "Lock tokens and let the Diamond Hands app be the trusty leash that keeps your tokens safe and sound. It's like a digital doghouse for your tokens, but with a lot more treats!",
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 }
 
 export default function RootLayout({
@@ -37,28 +44,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon-16x16.png"
-        />
-      </head>
       <body
         className={`${federation.variable} ${montserrat.variable} ${montserrat.className}`}>
-        <Providers>{children}</Providers>
+        <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>
   )

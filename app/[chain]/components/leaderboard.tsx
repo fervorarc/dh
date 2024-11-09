@@ -1,17 +1,13 @@
 'use client'
 
+import Link from 'next/link'
+import Image from 'next/image'
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,45 +20,99 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-type Payment = {
+type Token = {
   id: string
-  amount: number
-  status: 'pending' | 'processing' | 'success' | 'failed'
-  email: string
+  logo: string
+  token: string
+  address: string
+  tvl: number
+  chain: string
 }
 
-const columns: ColumnDef<Payment>[] = [
+const columns: ColumnDef<Token>[] = [
+  {
+    accessorKey: 'logo',
+    header: '',
+    cell: ({ row }) => (
+      <Image
+        src={row.getValue('logo')}
+        alt={row.getValue('token')}
+        width={32}
+        height={32}
+        className="rounded-full"
+      />
+    ),
+  },
   {
     accessorKey: 'token',
     header: 'Token',
+    cell: ({ row }) => {
+      return (
+        <Link
+          href={`/${row.original.chain}/leaderboard/${row.original.token}`}
+          className="text-primary hover:underline">
+          {row.getValue('token')}
+        </Link>
+      )
+    },
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    cell: ({ row }) => {
+      const address = row.getValue('address') as string
+      const explorerUrl = `https://etherscan.io/token/${address}`
+      return (
+        <Link href={explorerUrl} target="_blank" className="text-primary hover:underline">
+          {address.slice(0, 6)}...{address.slice(-4)}
+        </Link>
+      )
+    }
   },
   {
     accessorKey: 'tvl',
     header: 'TVL',
+    cell: ({ row }) => `$${row.getValue<number>('tvl').toLocaleString()}`
   },
 ]
 
-function getData(): Payment[] {
-  // Fetch data from your API here.
+function getData(): Token[] {
   return [
     {
-      id: '728ed52f',
-      amount: 100,
-      status: 'pending',
-      email: 'm@example.com',
+      id: '1',
+      logo: '/logo.png',
+      token: 'AI',
+      address: '0x2598c30330D5771AE9F983979209486aE26dE875',
+      tvl: 1000000,
+      chain: 'eth',
     },
-    // ...
+    {
+      id: '2',
+      logo: '/chains/ethereum.svg',
+      token: 'WETH',
+      address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+      tvl: 5000000,
+      chain: 'eth',
+    },
+    {
+      id: '3',
+      logo: '/chains/polygon.svg',
+      token: 'MATIC',
+      address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+      tvl: 750000,
+      chain: 'eth',
+    }
   ]
 }
 
-export function Leaderboard() {
+interface LeaderboardProps {
+  chain: string
+}
+
+export function Leaderboard({ chain }: LeaderboardProps) {
   const table = useReactTable({
-    data: getData(),
-    columns: columns,
+    data: getData().map(item => ({ ...item, chain })),
+    columns,
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -72,9 +122,9 @@ export function Leaderboard() {
         <p>Select a token to lock!</p>
         <Input
           placeholder="Search"
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn('token')?.getFilterValue() as string) ?? ''}
           onChange={event =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
+            table.getColumn('token')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -127,47 +177,10 @@ export function Leaderboard() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between px-2">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}>
-              <span className="sr-only">Go to first page</span>
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}>
-              <span className="sr-only">Go to previous page</span>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}>
-              <span className="sr-only">Go to next page</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}>
-              <span className="sr-only">Go to last page</span>
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+      <div className="flex justify-end mt-4">
+        <Button asChild className="glow">
+          <Link href={`/${chain}/create-leaderboard`}>Create Leaderboard</Link>
+        </Button>
       </div>
     </section>
   )

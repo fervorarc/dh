@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    --background: 221 82% 7%;
+    --background: 222 47% 4%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 222 47% 6%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 47% 6%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 217.2 91.2% 59.8%;
@@ -41,14 +41,55 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground bg-[radial-gradient(ellipse_at_top,rgba(13,41,89,0.3),transparent_50%),radial-gradient(ellipse_at_bottom,rgba(13,41,89,0.2),transparent_50%)];
+    background-attachment: fixed;
   }
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-federation;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-federation tracking-wider;
   }
+}
+
+@layer components {
+  .glow {
+    @apply relative;
+  }
+  .glow::after {
+    @apply absolute inset-0 rounded-lg opacity-40 blur-sm transition-all;
+    content: '';
+    background: linear-gradient(45deg, rgba(56,139,253,0.15), rgba(17,52,89,0.15));
+  }
+  .glow:hover::after {
+    @apply opacity-60;
+  }
+
+  .sci-fi-border {
+    @apply relative border border-blue-500/20 bg-blue-950/10 backdrop-blur-sm;
+  }
+  .sci-fi-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-lg opacity-20;
+    background: linear-gradient(45deg, transparent, rgba(56,139,253,0.3), transparent);
+    animation: borderGlow 3s ease-in-out infinite;
+  }
+
+  .grid-bg {
+    background-image: 
+      linear-gradient(rgba(17,52,89,0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(17,52,89,0.2) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
+
+@keyframes borderGlow {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.4; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
